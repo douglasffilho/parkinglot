@@ -22,7 +22,9 @@ public class Car {
     @Column(nullable = false)
     private String color;
 
-    public Car() {}
+    public Car() {
+        this.id = UUID.randomUUID().toString();
+    }
 
     public Car(final String id, final String plate, final String model, final String color) {
         this.id = id;
