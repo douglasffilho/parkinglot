@@ -22,11 +22,20 @@ public class CarController {
     @Autowired
     private CarService carService;
 
-    @GetMapping("/{plate}")// http://localhost:8080/cars/PDU1234
+    /**
+     * GET http://localhost:8080/cars/PDU1234
+     * retorna status 200 (OK) quando consegue encontrar
+     * retorn status 404 (NOT_FOUND) quando não consegue encontrar
+     */
+    @GetMapping("/{plate}")
     public Car findByPlate(@PathVariable(name = "plate") final String plate) {
         return this.carService.findByPlate(plate);
     }
 
+    /**
+     * GET http://localhost:8080/cars?page=1&size=10
+     * retorna status 200 (OK) com resultado da listagem (Page)
+     */
     @GetMapping
     public Page<Car> findAll(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
@@ -38,6 +47,15 @@ public class CarController {
         return this.carService.paginateCars(page, size);
     }
 
+    /**
+     * POST http://localhost:8080/cars
+     * corpo da requisição:
+     * {"plate": "Placa", "model": "modelo", "color": "cor"}
+     *
+     * retorna status 201 (CREATED) quando for criado o recurso
+     * retorna status 400 (BAD_REQUEST) caso falte alguma informação
+     * retorna status 409 (CONFLICT) caso ja existe um recurso com mesma placa
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Car create(@RequestBody Car creatingCar) {
