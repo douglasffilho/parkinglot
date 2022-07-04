@@ -1,4 +1,4 @@
-package br.com.william.parkinglot;
+package br.com.william.parkinglot.service;
 
 import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.exception.CarConflictException;

@@ -1,1 +1,1 @@
-docker run --rm --name parkinglot_pg -e POSTGRES_PASSWORD=password -e POSTGRES_USER=admin -e POSTGRES_DB=parkinglot -p 5432:5432  -d postgres
+docker run --rm --name parkinglot_pg -e POSTGRES_PASSWORD=password -e POSTGRES_USER=admin -e POSTGRES_DB=parkinglot -p 5432:5432 -d postgres
