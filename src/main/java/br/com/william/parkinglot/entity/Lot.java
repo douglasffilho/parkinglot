@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "vagas")
+@Table(name = "lots")
 public class Lot {
     @Id
     private String id;
@@ -13,7 +13,7 @@ public class Lot {
     private int number;
 
     @OneToOne
-    @JoinColumn(name = "car_id")
+    @JoinColumn(name = "car_id", unique = true)
     private Car car;
 
     public Lot() {

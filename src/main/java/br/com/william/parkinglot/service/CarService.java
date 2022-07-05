@@ -22,6 +22,12 @@ public class CarService {
                 .orElseThrow(() -> new CarNotFoundException("car not found by plate: %s".formatted(plate)));
     }
 
+    public Car findOrCreate(final Car car) {
+        return this.carRepository
+                .findByPlate(car.getPlate())
+                .orElseGet(() -> this.carRepository.save(car));
+    }
+
     public Page<Car> paginateCars(final int page, final int size) {
         return this.carRepository.findAll(PageRequest.of(page - 1, size));
     }
