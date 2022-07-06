@@ -4,6 +4,7 @@ import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.entity.Lot;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LotRepository extends JpaRepository<Lot, String> {
@@ -11,4 +12,10 @@ public interface LotRepository extends JpaRepository<Lot, String> {
     Optional<Lot> findFirstByCarNull();
 
     Optional<Lot> findByCarPlate(String carPlate);
+
+    Optional<Lot> findByNumber(int number);
+
+    List<Lot> findAllByCarNull();
+
+    List<Lot> findAllByCarNotNull();
 }

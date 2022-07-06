@@ -10,3 +10,5 @@ spring:
   sql:
     init:
       mode: always
+  jackson:
+    default-property-inclusion: non_null

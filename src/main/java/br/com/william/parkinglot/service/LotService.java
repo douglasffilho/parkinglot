@@ -4,12 +4,15 @@ import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.entity.Lot;
 import br.com.william.parkinglot.exception.AvailableLotNotFoundException;
 import br.com.william.parkinglot.exception.CarAlreadyParkedException;
+import br.com.william.parkinglot.exception.LotNotFoundException;
 import br.com.william.parkinglot.repository.LotRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
@@ -80,5 +83,27 @@ public class LotService {
                     lot.setCar(null);
                     this.repository.save(lot);
                 });
+    }
+
+    public Lot findByCarPlate(final String carPlate) {
+        return this.repository
+                .findByCarPlate(carPlate)
+                .orElseThrow(() -> new LotNotFoundException(carPlate));
+    }
+
+    public Lot findByNumber(final int number) {
+        return this.repository
+                .findByNumber(number)
+                .orElseThrow(() -> new LotNotFoundException(number));
+    }
+
+    public List<Lot> findAll(final Boolean filterAvailable) {
+        if (filterAvailable == null)
+            return this.repository.findAll();
+
+        if (filterAvailable)
+            return this.repository.findAllByCarNull();
+
+        return this.repository.findAllByCarNotNull();
     }
 }
