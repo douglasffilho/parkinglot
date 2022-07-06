@@ -1,6 +1,8 @@
 package br.com.william.parkinglot.controller;
 
 import br.com.william.parkinglot.entity.Car;
+import br.com.william.parkinglot.model.dto.CarDTO;
+import br.com.william.parkinglot.model.mapper.CarMapper;
 import br.com.william.parkinglot.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/cars")
@@ -56,7 +60,8 @@ public class CarController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Car create(@RequestBody Car creatingCar) {
+    public Car create(@Valid @RequestBody CarDTO dto) {
+        Car creatingCar = CarMapper.map(dto);
         return this.carService.create(creatingCar);
     }
 }
