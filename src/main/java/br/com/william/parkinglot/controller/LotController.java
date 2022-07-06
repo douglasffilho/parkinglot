@@ -20,4 +20,10 @@ public class LotController {
     public Lot rentOneLot(@RequestBody Car car) {
         return this.service.rentAvailableLot(car);
     }
+
+    @DeleteMapping("/{carPlate}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void getOutOfParking(@PathVariable(name = "carPlate") final String carPlate) {
+        this.service.getOutOfParkingByCarPlate(carPlate);
+    }
 }

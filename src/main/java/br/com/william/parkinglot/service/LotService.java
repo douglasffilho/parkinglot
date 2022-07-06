@@ -72,4 +72,13 @@ public class LotService {
 
         return this.repository.save(lot);
     }
+
+    public void getOutOfParkingByCarPlate(final String carPlate) {
+        this.repository
+                .findByCarPlate(carPlate)
+                .ifPresent(lot -> {
+                    lot.setCar(null);
+                    this.repository.save(lot);
+                });
+    }
 }
