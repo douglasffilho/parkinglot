@@ -2,10 +2,13 @@ package br.com.william.parkinglot.controller;
 
 import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.entity.Lot;
+import br.com.william.parkinglot.model.dto.CarDTO;
+import br.com.william.parkinglot.model.mapper.CarMapper;
 import br.com.william.parkinglot.service.LotService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -19,11 +22,12 @@ public class LotController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Lot rentOneLot(@RequestBody Car car) {
+    public Lot rentOneLot(@Valid @RequestBody CarDTO dto) {
+        Car car = CarMapper.map(dto);
         return this.service.rentAvailableLot(car);
     }
 
-    @DeleteMapping("/{carPlate}")
+    @DeleteMapping("/by-car-plate/{carPlate}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void getOutOfParking(@PathVariable(name = "carPlate") final String carPlate) {
         this.service.getOutOfParkingByCarPlate(carPlate);
