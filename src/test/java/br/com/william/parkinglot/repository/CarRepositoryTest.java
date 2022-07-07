@@ -1,12 +1,7 @@
 package br.com.william.parkinglot.repository;
 
-import br.com.william.parkinglot.SpringBootApplicationTest;
 import br.com.william.parkinglot.entity.Car;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
@@ -14,25 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class CarRepositoryTest extends SpringBootApplicationTest {
-    @Autowired
-    CarRepository repository;
-
-    @BeforeAll
-    public void setup() {
-        this.repository.save(new Car(
-                "KGK1022",
-                "Prisma",
-                "Preto"
-        ));
-
-        this.repository.save(new Car(
-                "KGK1023",
-                "Prisma",
-                "Prata"
-        ));
-    }
+class CarRepositoryTest extends CarRepositoryBaseTest {
 
     @Test
     public void shouldFindCarByPlate() {
@@ -78,10 +55,5 @@ class CarRepositoryTest extends SpringBootApplicationTest {
         assertNotNull(carWrapper);
         //assertFalse(carWrapper.isPresent());
         assertTrue(carWrapper.isEmpty());
-    }
-
-    @AfterAll
-    public void cleanup() {
-        this.repository.deleteAll();
     }
 }
