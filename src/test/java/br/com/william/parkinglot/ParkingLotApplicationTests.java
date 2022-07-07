@@ -1,13 +1,11 @@
 package br.com.william.parkinglot;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class ParkingLotApplicationTests {
+class ParkingLotApplicationTests extends SpringBootApplicationTest {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }
