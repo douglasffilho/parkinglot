@@ -1,6 +1,5 @@
 package br.com.william.parkinglot.repository;
 
-import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.entity.Lot;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -17,5 +16,6 @@ public interface LotRepository extends JpaRepository<Lot, String> {
 
     List<Lot> findAllByCarNull();
 
+    // @Query(value = "SELECT * FROM lots WHERE car_id not null")
     List<Lot> findAllByCarNotNull();
 }
