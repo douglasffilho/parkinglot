@@ -4,18 +4,18 @@ import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.exception.CarConflictException;
 import br.com.william.parkinglot.exception.CarNotFoundException;
 import br.com.william.parkinglot.repository.CarRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class CarService {
-    @Autowired
-    private CarRepository carRepository;
+    private final CarRepository carRepository;
+
+    public CarService(final CarRepository carRepository) {
+        this.carRepository = carRepository;
+    }
 
     public Car findByPlate(final String plate) {
         return this.carRepository.findByPlate(plate)
