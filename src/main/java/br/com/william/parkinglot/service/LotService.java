@@ -3,26 +3,17 @@ package br.com.william.parkinglot.service;
 import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.entity.Lot;
 import br.com.william.parkinglot.exception.AvailableLotNotFoundException;
+import br.com.william.parkinglot.exception.BadRequestException;
 import br.com.william.parkinglot.exception.CarAlreadyParkedException;
 import br.com.william.parkinglot.exception.LotNotFoundException;
 import br.com.william.parkinglot.repository.LotRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Service
 public class LotService {
-    private static final Logger log = LoggerFactory.getLogger(LotService.class);
-
-    private static final int LOTS_AVAILABLE = 5;
-
     private final LotRepository repository;
-
     private final CarService carService;
 
     public LotService(
@@ -33,32 +24,9 @@ public class LotService {
         this.carService = carService;
     }
 
-    @PostConstruct
-    public void init() {
-        log.info("INICIANDO VALIDAÇÃO DE VAGAS");
-        final long contagemDeVagasNoBanco = this.repository.count();
-        if (contagemDeVagasNoBanco != LOTS_AVAILABLE) {
-            log.info("CRIANDO VAGAS NO BANCO DE DADOS");
-            this.repository.deleteAll();
-            IntStream
-                    .rangeClosed(1, LOTS_AVAILABLE)
-                    .mapToObj(Lot::new)
-                    .forEach(this.repository::save);
-
-//            IntStream
-//                    .rangeClosed(1, LOTS_AVAILABLE)
-//                    .mapToObj(number -> new Lot(number))
-//                    .forEach(lot -> this.repository.save(lot));
-
-//            for (int i = 1; i <= LOTS_AVAILABLE; i++) {
-//                Lot newLot = new Lot(i);
-//
-//                this.repository.save(newLot);
-//            }
-        }
-    }
-
     public Lot rentAvailableLot(Car car) {
+        if (car == null) throw new BadRequestException("Objeto carro invalido", "invalid-car-object");
+
         this.repository.findByCarPlate(car.getPlate()).ifPresent(lot -> {
             throw new CarAlreadyParkedException(
                     "O carro já está estacionado na vaga: %s".formatted(lot.getNumber())
