@@ -21,13 +21,16 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/cars")
 public class CarController {
-    @Autowired
-    private CarService carService;
+    private final CarService carService;
+
+    public CarController(final CarService carService) {
+        this.carService = carService;
+    }
 
     /**
      * GET http://localhost:8080/cars/PDU1234
      * retorna status 200 (OK) quando consegue encontrar
-     * retorn status 404 (NOT_FOUND) quando não consegue encontrar
+     * retorna status 404 (NOT_FOUND) quando não consegue encontrar
      */
     @GetMapping("/{plate}")
     public Car findByPlate(@PathVariable(name = "plate") final String plate) {
@@ -35,13 +38,14 @@ public class CarController {
     }
 
     /**
-     * GET http://localhost:8080/cars?page=1&size=10
+     * GET http://localhost:8080/cars?page=1&size=10&filter=pret
      * retorna status 200 (OK) com resultado da listagem (Page)
      */
     @GetMapping
     public Page<Car> findAll(
             @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(name = "size", required = false, defaultValue = "10") Integer size
+            @RequestParam(name = "size", required = false, defaultValue = "10") Integer size,
+            @RequestParam(name = "filter", required = false, defaultValue = "") String filter
     ) {
         if (page < 1) page = 1;
         if (size < 1) size = 10;

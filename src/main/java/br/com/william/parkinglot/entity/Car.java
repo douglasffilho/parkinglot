@@ -78,4 +78,26 @@ public class Car {
                 ", color='" + color + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Car car = (Car) o;
+
+        if (!id.equals(car.id)) return false;
+        if (!plate.equals(car.plate)) return false;
+        if (!model.equals(car.model)) return false;
+        return color.equals(car.color);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + plate.hashCode();
+        result = 31 * result + model.hashCode();
+        result = 31 * result + color.hashCode();
+        return result;
+    }
 }
