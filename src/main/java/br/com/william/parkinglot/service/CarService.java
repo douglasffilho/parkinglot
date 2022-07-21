@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CarService {
     private final CarRepository carRepository;
@@ -28,8 +30,16 @@ public class CarService {
                 .orElseGet(() -> this.carRepository.save(car));
     }
 
-    public Page<Car> paginateCars(final int page, final int size) {
-        return this.carRepository.findAll(PageRequest.of(page - 1, size));
+    public Page<Car> paginateCars(final int page, final int size, final String filter) {
+//        final var matchingTerm = filter != null ? filter : "";
+        final var matchingTerm = Optional.ofNullable(filter).orElse("");
+
+        return this.carRepository.findAllByPlateContainingIgnoreCaseOrColorContainingIgnoreCaseOrModelContainingIgnoreCase(
+                matchingTerm,
+                matchingTerm,
+                matchingTerm,
+                PageRequest.of(page - 1, size)
+        );
     }
 
     public Car create(Car creatingCar) {

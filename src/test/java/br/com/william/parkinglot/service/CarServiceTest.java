@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,7 +41,12 @@ class CarServiceTest {
 
         when(this.carRepositoryMock.findByPlate("KGK1030")).thenReturn(Optional.of(validCar("KGK1030")));
         when(this.carRepositoryMock.findByPlate("KGK1031")).thenReturn(Optional.empty());
-        when(this.carRepositoryMock.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(
+        when(this.carRepositoryMock.findAllByPlateContainingIgnoreCaseOrColorContainingIgnoreCaseOrModelContainingIgnoreCase(
+                anyString(),
+                anyString(),
+                anyString(),
+                any(Pageable.class)
+        )).thenReturn(new PageImpl<>(
                 List.of(validCar("KGK1030"), validCar("KGK3020")),
                 PageRequest.of(0, 10),
                 2
@@ -147,9 +153,20 @@ class CarServiceTest {
     }
 
     @Test
-    public void shouldPaginateCars() {
+    public void shouldPaginateAllCars() {
         // when:
-        Page<Car> page = this.carService.paginateCars(1, 10);
+        Page<Car> page = this.carService.paginateCars(1, 10, "");
+
+        // then:
+        assertNotNull(page);
+        assertEquals(2, page.getTotalElements());
+        assertEquals(List.of("KGK1030", "KGK3020"), page.getContent().stream().map(Car::getPlate).collect(toList()));
+    }
+
+    @Test
+    public void shouldPaginateAllCarsByNullSearchTerm() {
+        // when:
+        Page<Car> page = this.carService.paginateCars(1, 10, null);
 
         // then:
         assertNotNull(page);

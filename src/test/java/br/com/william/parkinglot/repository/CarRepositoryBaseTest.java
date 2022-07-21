@@ -25,6 +25,18 @@ public abstract class CarRepositoryBaseTest extends SpringBootApplicationTest {
                 "Prisma",
                 "Prata"
         ));
+
+        this.repository.save(new Car(
+                "KGJ1024",
+                "Cobalt",
+                "Preto"
+        ));
+
+        this.repository.save(new Car(
+                "KGI1025",
+                "Onix",
+                "Prata"
+        ));
     }
 
     @AfterAll

@@ -6,9 +6,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
   sql:
     init:
-      mode: always
+      mode: never
   jackson:
     default-property-inclusion: non_null

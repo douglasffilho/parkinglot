@@ -4,17 +4,9 @@ import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.model.dto.CarDTO;
 import br.com.william.parkinglot.model.mapper.CarMapper;
 import br.com.william.parkinglot.service.CarService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -50,14 +42,14 @@ public class CarController {
         if (page < 1) page = 1;
         if (size < 1) size = 10;
 
-        return this.carService.paginateCars(page, size);
+        return this.carService.paginateCars(page, size, filter);
     }
 
     /**
      * POST http://localhost:8080/cars
      * corpo da requisição:
      * {"plate": "Placa", "model": "modelo", "color": "cor"}
-     *
+     * <p>
      * retorna status 201 (CREATED) quando for criado o recurso
      * retorna status 400 (BAD_REQUEST) caso falte alguma informação
      * retorna status 409 (CONFLICT) caso ja existe um recurso com mesma placa
