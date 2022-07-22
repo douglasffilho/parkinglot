@@ -35,7 +35,7 @@ public class WebExceptionHandler {
                         .map(error -> "%s:%s".formatted(error.getField(), error.getDefaultMessage()))
                         .collect(Collectors.joining(","))
         );
-        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("status", HttpStatus.BAD_REQUEST.value());
         response.put("logref", "bad-request");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
@@ -48,7 +48,7 @@ public class WebExceptionHandler {
                 "message",
                 "Param invalid value: %s:%s".formatted(ex.getName(), ex.getValue())
         );
-        response.put("status", HttpStatus.BAD_REQUEST);
+        response.put("status", HttpStatus.BAD_REQUEST.value());
         response.put("logref", "bad-request");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
