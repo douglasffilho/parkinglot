@@ -33,6 +33,7 @@ public class WebExceptionHandler {
                 ex.getFieldErrors()
                         .stream()
                         .map(error -> "%s:%s".formatted(error.getField(), error.getDefaultMessage()))
+                        .sorted()
                         .collect(Collectors.joining(","))
         );
         response.put("status", HttpStatus.BAD_REQUEST.value());
