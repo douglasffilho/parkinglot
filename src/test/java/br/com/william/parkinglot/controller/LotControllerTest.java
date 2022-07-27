@@ -5,6 +5,7 @@ import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.entity.Lot;
 import br.com.william.parkinglot.exception.AvailableLotNotFoundException;
 import br.com.william.parkinglot.exception.CarAlreadyParkedException;
+import br.com.william.parkinglot.exception.LotNotFoundException;
 import br.com.william.parkinglot.fixture.LotFixture;
 import br.com.william.parkinglot.model.dto.CarDTO;
 import br.com.william.parkinglot.service.LotService;
@@ -13,8 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -163,4 +170,236 @@ class LotControllerTest extends SpringBootApplicationTest {
                         """));
     }
 
+    // getOutOfParking - caminho feliz: valida chamada ao método da service
+    @Test
+    public void shouldGetOutCarOfParkingLot() throws Exception {
+        // given
+        var carPlate = "KGK1030";
+
+        // when
+        var actions = this.mockMvc.perform(delete("/lots/by-car-plate/%s".formatted(carPlate)));
+
+        // then
+        verify(this.lotService, times(1)).getOutOfParkingByCarPlate(carPlate);
+        actions.andExpect(status().isAccepted());
+    }
+
+    // findByCarPlate - caminho feliz: encontra a vaga ocupada pelo carro
+    @Test
+    public void shouldFindOccupiedLotByCarPlate() throws Exception {
+        // given
+        var carPlate = "KGK1030";
+        var lotNumber = 1;
+        var lot = LotFixture.validOccupiedLot(lotNumber, carPlate);
+
+        // when
+        when(this.lotService.findByCarPlate(carPlate)).thenReturn(lot);
+        var actions = this.mockMvc.perform(get("/lots/by-car-plate/%s".formatted(carPlate)));
+
+        // then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        {
+                            "id": "%s",
+                            "number": 1,
+                            "car": {
+                                "id": "%s",
+                                "plate": "KGK1030",
+                                "model": "Prisma",
+                                "color": "Preto"
+                            }
+                        }
+                        """.formatted(lot.getId(), lot.getCar().getId())));
+    }
+
+    /**
+     * findByCarPlate - caminho infeliz: não encontra a vaga ocupada pelo carro e lança erro LotNotFoundException
+     * Carro não está estacionado: KGK1030, lot-not-found
+     */
+    @Test
+    public void shouldThrowErrorIfNotFindOccupiedLotByCarPlate() throws Exception {
+        // given
+        var carPlate = "KGK1030";
+
+        // when
+        when(this.lotService.findByCarPlate(carPlate)).thenThrow(new LotNotFoundException(carPlate));
+        var actions = this.mockMvc.perform(get("/lots/by-car-plate/%s".formatted(carPlate)));
+
+        // then
+        actions
+                .andExpect(status().isNotFound())
+                .andExpect(content().json("""
+                        {
+                            "message": "Carro não está estacionado: KGK1030",
+                            "status": 404,
+                            "logref": "lot-not-found"
+                        }
+                        """));
+    }
+
+    // findByNumber - caminho feliz: encontra a vaga pelo seu numero
+    @Test
+    public void shouldFindLotByNumber() throws Exception {
+        // given
+        var carPlate = "KGK1030";
+        var lotNumber = 1;
+        var lot = LotFixture.validOccupiedLot(lotNumber, carPlate);
+
+        // when
+        when(this.lotService.findByNumber(lotNumber)).thenReturn(lot);
+        var actions = this.mockMvc.perform(get("/lots/%s".formatted(lotNumber)));
+
+        // then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        {
+                            "id": "%s",
+                            "number": 1,
+                            "car": {
+                                "id": "%s",
+                                "plate": "KGK1030",
+                                "model": "Prisma",
+                                "color": "Preto"
+                            }
+                        }
+                        """.formatted(lot.getId(), lot.getCar().getId())));
+    }
+
+    /**
+     * findByNumber - caminho infeliz: não encontra a vaga pelo numero e lança erro LotNotFoundException
+     * Vaga não existe: 1, lot-not-found
+     */
+    @Test
+    public void shouldThrowErrorIfNotFindLotByNumber() throws Exception {
+        // given
+        var lotNumber = 1;
+
+        // when
+        when(this.lotService.findByNumber(lotNumber)).thenThrow(new LotNotFoundException(lotNumber));
+        var actions = this.mockMvc.perform(get("/lots/%s".formatted(lotNumber)));
+
+        // then
+        actions
+                .andExpect(status().isNotFound())
+                .andExpect(content().json("""
+                        {
+                            "message": "Vaga não existe: 1",
+                            "status": 404,
+                            "logref": "lot-not-found"
+                        }
+                        """));
+    }
+
+    // findAllLots - encontra todas, sem filtro
+    @Test
+    public void shouldFindAllLotsWithoutFilter() throws Exception {
+        // given
+        var lots = List.of(
+                LotFixture.validOccupiedLot(1, "KGK1020")
+        );
+
+        // when
+        when(this.lotService.findAll(null)).thenReturn(lots);
+        var actions = this.mockMvc.perform(get("/lots"));
+
+        // then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        [{
+                            "id": "%s",
+                            "number": 1,
+                            "car": {
+                                "id": "%s",
+                                "plate": "KGK1020",
+                                "model": "Prisma",
+                                "color": "Preto"
+                            }
+                        }]
+                        """.formatted(lots.get(0).getId(), lots.get(0).getCar().getId())));
+        verify(this.lotService, times(1)).findAll(null);
+    }
+
+    // findAllLots - encontra todas ocupadas, com filtro de ocupadas
+    @Test
+    public void shouldFindAllLotsFilteringOccupied() throws Exception {
+        // given
+        var lots = List.of(
+                LotFixture.validOccupiedLot(1, "KGK1020")
+        );
+
+        // when
+        when(this.lotService.findAll(false)).thenReturn(lots);
+        var actions = this.mockMvc.perform(get("/lots?available=false"));
+
+        // then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        [{
+                            "id": "%s",
+                            "number": 1,
+                            "car": {
+                                "id": "%s",
+                                "plate": "KGK1020",
+                                "model": "Prisma",
+                                "color": "Preto"
+                            }
+                        }]
+                        """.formatted(lots.get(0).getId(), lots.get(0).getCar().getId())));
+        verify(this.lotService, times(1)).findAll(false);
+    }
+
+    // findAllLots - encontra todas disponiveis, com filtro de disponiveis
+    @Test
+    public void shouldFindAllLotsFilteringAvailable() throws Exception {
+        // given
+        var lots = List.of(
+                LotFixture.validAvailableLot(1)
+        );
+
+        // when
+        when(this.lotService.findAll(true)).thenReturn(lots);
+        var actions = this.mockMvc.perform(get("/lots?available=true"));
+
+        // then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        [{
+                            "id": "%s",
+                            "number": 1
+                        }]
+                        """.formatted(lots.get(0).getId())));
+        verify(this.lotService, times(1)).findAll(true);
+    }
+
+    /**
+     * findAll - caminho infeliz: valor de filtro invalido
+     * lança erro MethodArgumentTypeMismatchException que é capturado na WebExceptionHandler
+     */
+    @Test
+    public void shouldThrowErrorWhenFilteringByInvalidValue() throws Exception {
+        // given
+        var lots = List.of(
+                LotFixture.validAvailableLot(1)
+        );
+
+        // when
+        when(this.lotService.findAll(true)).thenReturn(lots);
+        var actions = this.mockMvc.perform(get("/lots?available=invalid"));
+
+        // then
+        actions
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json("""
+                        {
+                            "logref": "bad-request",
+                            "message": "Param invalid value: available:invalid",
+                            "status": 400
+                        }
+                        """));
+    }
 }
