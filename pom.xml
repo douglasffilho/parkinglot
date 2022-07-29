@@ -14,9 +14,9 @@
     <name>Parking Lot</name>
     <description>Demo Parking Lot Web Project</description>
     <properties>
-        <java.version>18</java.version>
-        <maven.compiler.target>18</maven.compiler.target>
-        <maven.compiler.source>18</maven.compiler.source>
+        <java.version>11</java.version>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
     </properties>
     <dependencies>
         <dependency>
