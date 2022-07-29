@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 @RestControllerAdvice
 public class WebExceptionHandler {
 
@@ -32,7 +34,7 @@ public class WebExceptionHandler {
                 "message",
                 ex.getFieldErrors()
                         .stream()
-                        .map(error -> "%s:%s".formatted(error.getField(), error.getDefaultMessage()))
+                        .map(error -> format("%s:%s", error.getField(), error.getDefaultMessage()))
                         .sorted()
                         .collect(Collectors.joining(","))
         );
@@ -47,7 +49,7 @@ public class WebExceptionHandler {
         final Map<String, Object> response = new HashMap<>();
         response.put(
                 "message",
-                "Param invalid value: %s:%s".formatted(ex.getName(), ex.getValue())
+                format("Param invalid value: %s:%s", ex.getName(), ex.getValue())
         );
         response.put("status", HttpStatus.BAD_REQUEST.value());
         response.put("logref", "bad-request");

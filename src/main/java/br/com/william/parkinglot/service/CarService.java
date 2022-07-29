@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static java.lang.String.format;
+
 @Service
 public class CarService {
     private final CarRepository carRepository;
@@ -21,7 +23,7 @@ public class CarService {
 
     public Car findByPlate(final String plate) {
         return this.carRepository.findByPlate(plate)
-                .orElseThrow(() -> new CarNotFoundException("car not found by plate: %s".formatted(plate)));
+                .orElseThrow(() -> new CarNotFoundException(format("car not found by plate: %s", plate)));
     }
 
     public Car findOrCreate(final Car car) {
@@ -47,7 +49,7 @@ public class CarService {
             return this.carRepository.save(creatingCar);
         } catch (DataIntegrityViolationException ex) {
             throw new CarConflictException(
-                    "Conflicted creating car with plate %s".formatted(creatingCar.getPlate()),
+                    format("Conflicted creating car with plate %s", creatingCar.getPlate()),
                     creatingCar.getPlate()
             );
         }

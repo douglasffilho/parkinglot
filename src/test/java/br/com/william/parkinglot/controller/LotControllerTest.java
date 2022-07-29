@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -76,13 +77,11 @@ class LotControllerTest extends SpringBootApplicationTest {
         // then
         actions
                 .andExpect(status().isNotFound())
-                .andExpect(content().json("""
-                        {
-                            "message": "Não há mais vagas disponiveis!",
-                            "status": 404,
-                            "logref": "lot-not-found"
-                        }
-                        """));
+                .andExpect(content().json("{\n" +
+                                          "    \"message\": \"Não há mais vagas disponiveis!\",\n" +
+                                          "    \"status\": 404,\n" +
+                                          "    \"logref\": \"lot-not-found\"\n" +
+                                          "}\n"));
     }
 
     // rentOneLot - caminho infeliz = carro valido, mas, já esta estacionado
@@ -106,13 +105,11 @@ class LotControllerTest extends SpringBootApplicationTest {
         // then
         actions
                 .andExpect(status().isConflict())
-                .andExpect(content().json("""
-                        {
-                            "message": "teste",
-                            "status": 409,
-                            "logref": "conflict-lot"
-                        }
-                        """));
+                .andExpect(content().json("{\n" +
+                                          "    \"message\": \"teste\",\n" +
+                                          "    \"status\": 409,\n" +
+                                          "    \"logref\": \"conflict-lot\"\n" +
+                                          "}\n"));
     }
 
     // rentOneLot - caminho infeliz = carro invalido (DTO)
@@ -135,13 +132,11 @@ class LotControllerTest extends SpringBootApplicationTest {
         // then
         actions
                 .andExpect(status().isBadRequest())
-                .andExpect(content().json("""
-                        {
-                            "message": "model:invalid-model,plate:invalid-plate",
-                            "status": 400,
-                            "logref": "bad-request"
-                        }
-                        """));
+                .andExpect(content().json("{\n" +
+                                          "    \"message\": \"model:invalid-model,plate:invalid-plate\",\n" +
+                                          "    \"status\": 400,\n" +
+                                          "    \"logref\": \"bad-request\"\n" +
+                                          "}\n"));
     }
 
     // rentOneLot - caminho infeliz = carro com dados faltantes (DTO)
@@ -161,13 +156,11 @@ class LotControllerTest extends SpringBootApplicationTest {
         // then
         actions
                 .andExpect(status().isBadRequest())
-                .andExpect(content().json("""
-                        {
-                            "message": "color:missing-color,model:missing-model,plate:missing-plate",
-                            "status": 400,
-                            "logref": "bad-request"
-                        }
-                        """));
+                .andExpect(content().json("{\n" +
+                                          "    \"message\": \"color:missing-color,model:missing-model,plate:missing-plate\",\n" +
+                                          "    \"status\": 400,\n" +
+                                          "    \"logref\": \"bad-request\"\n" +
+                                          "}\n"));
     }
 
     // getOutOfParking - caminho feliz: valida chamada ao método da service
@@ -177,7 +170,7 @@ class LotControllerTest extends SpringBootApplicationTest {
         var carPlate = "KGK1030";
 
         // when
-        var actions = this.mockMvc.perform(delete("/lots/by-car-plate/%s".formatted(carPlate)));
+        var actions = this.mockMvc.perform(delete(format("/lots/by-car-plate/%s", carPlate)));
 
         // then
         verify(this.lotService, times(1)).getOutOfParkingByCarPlate(carPlate);
@@ -194,23 +187,21 @@ class LotControllerTest extends SpringBootApplicationTest {
 
         // when
         when(this.lotService.findByCarPlate(carPlate)).thenReturn(lot);
-        var actions = this.mockMvc.perform(get("/lots/by-car-plate/%s".formatted(carPlate)));
+        var actions = this.mockMvc.perform(get(format("/lots/by-car-plate/%s", carPlate)));
 
         // then
         actions
                 .andExpect(status().isOk())
-                .andExpect(content().json("""
-                        {
-                            "id": "%s",
-                            "number": 1,
-                            "car": {
-                                "id": "%s",
-                                "plate": "KGK1030",
-                                "model": "Prisma",
-                                "color": "Preto"
-                            }
-                        }
-                        """.formatted(lot.getId(), lot.getCar().getId())));
+                .andExpect(content().json(format("{\n" +
+                                                 "    \"id\": \"%s\",\n" +
+                                                 "    \"number\": 1,\n" +
+                                                 "    \"car\": {\n" +
+                                                 "        \"id\": \"%s\",\n" +
+                                                 "        \"plate\": \"KGK1030\",\n" +
+                                                 "        \"model\": \"Prisma\",\n" +
+                                                 "        \"color\": \"Preto\"\n" +
+                                                 "    }\n" +
+                                                 "}\n", lot.getId(), lot.getCar().getId())));
     }
 
     /**
@@ -224,18 +215,16 @@ class LotControllerTest extends SpringBootApplicationTest {
 
         // when
         when(this.lotService.findByCarPlate(carPlate)).thenThrow(new LotNotFoundException(carPlate));
-        var actions = this.mockMvc.perform(get("/lots/by-car-plate/%s".formatted(carPlate)));
+        var actions = this.mockMvc.perform(get(format("/lots/by-car-plate/%s", carPlate)));
 
         // then
         actions
                 .andExpect(status().isNotFound())
-                .andExpect(content().json("""
-                        {
-                            "message": "Carro não está estacionado: KGK1030",
-                            "status": 404,
-                            "logref": "lot-not-found"
-                        }
-                        """));
+                .andExpect(content().json("{\n" +
+                                          "    \"message\": \"Carro não está estacionado: KGK1030\",\n" +
+                                          "    \"status\": 404,\n" +
+                                          "    \"logref\": \"lot-not-found\"\n" +
+                                          "}\n"));
     }
 
     // findByNumber - caminho feliz: encontra a vaga pelo seu numero
@@ -248,23 +237,21 @@ class LotControllerTest extends SpringBootApplicationTest {
 
         // when
         when(this.lotService.findByNumber(lotNumber)).thenReturn(lot);
-        var actions = this.mockMvc.perform(get("/lots/%s".formatted(lotNumber)));
+        var actions = this.mockMvc.perform(get(format("/lots/%s", lotNumber)));
 
         // then
         actions
                 .andExpect(status().isOk())
-                .andExpect(content().json("""
-                        {
-                            "id": "%s",
-                            "number": 1,
-                            "car": {
-                                "id": "%s",
-                                "plate": "KGK1030",
-                                "model": "Prisma",
-                                "color": "Preto"
-                            }
-                        }
-                        """.formatted(lot.getId(), lot.getCar().getId())));
+                .andExpect(content().json(format("{\n" +
+                                                 "    \"id\": \"%s\",\n" +
+                                                 "    \"number\": 1,\n" +
+                                                 "    \"car\": {\n" +
+                                                 "        \"id\": \"%s\",\n" +
+                                                 "        \"plate\": \"KGK1030\",\n" +
+                                                 "        \"model\": \"Prisma\",\n" +
+                                                 "        \"color\": \"Preto\"\n" +
+                                                 "    }\n" +
+                                                 "}\n", lot.getId(), lot.getCar().getId())));
     }
 
     /**
@@ -278,18 +265,16 @@ class LotControllerTest extends SpringBootApplicationTest {
 
         // when
         when(this.lotService.findByNumber(lotNumber)).thenThrow(new LotNotFoundException(lotNumber));
-        var actions = this.mockMvc.perform(get("/lots/%s".formatted(lotNumber)));
+        var actions = this.mockMvc.perform(get(format("/lots/%s", lotNumber)));
 
         // then
         actions
                 .andExpect(status().isNotFound())
-                .andExpect(content().json("""
-                        {
-                            "message": "Vaga não existe: 1",
-                            "status": 404,
-                            "logref": "lot-not-found"
-                        }
-                        """));
+                .andExpect(content().json("{\n" +
+                                          "    \"message\": \"Vaga não existe: 1\",\n" +
+                                          "    \"status\": 404,\n" +
+                                          "    \"logref\": \"lot-not-found\"\n" +
+                                          "}\n"));
     }
 
     // findAllLots - encontra todas, sem filtro
@@ -307,18 +292,16 @@ class LotControllerTest extends SpringBootApplicationTest {
         // then
         actions
                 .andExpect(status().isOk())
-                .andExpect(content().json("""
-                        [{
-                            "id": "%s",
-                            "number": 1,
-                            "car": {
-                                "id": "%s",
-                                "plate": "KGK1020",
-                                "model": "Prisma",
-                                "color": "Preto"
-                            }
-                        }]
-                        """.formatted(lots.get(0).getId(), lots.get(0).getCar().getId())));
+                .andExpect(content().json(format("[{\n" +
+                                                 "    \"id\": \"%s\",\n" +
+                                                 "    \"number\": 1,\n" +
+                                                 "    \"car\": {\n" +
+                                                 "        \"id\": \"%s\",\n" +
+                                                 "        \"plate\": \"KGK1020\",\n" +
+                                                 "        \"model\": \"Prisma\",\n" +
+                                                 "        \"color\": \"Preto\"\n" +
+                                                 "    }\n" +
+                                                 "}]\n", lots.get(0).getId(), lots.get(0).getCar().getId())));
         verify(this.lotService, times(1)).findAll(null);
     }
 
@@ -337,18 +320,16 @@ class LotControllerTest extends SpringBootApplicationTest {
         // then
         actions
                 .andExpect(status().isOk())
-                .andExpect(content().json("""
-                        [{
-                            "id": "%s",
-                            "number": 1,
-                            "car": {
-                                "id": "%s",
-                                "plate": "KGK1020",
-                                "model": "Prisma",
-                                "color": "Preto"
-                            }
-                        }]
-                        """.formatted(lots.get(0).getId(), lots.get(0).getCar().getId())));
+                .andExpect(content().json(format("[{\n" +
+                                                 "    \"id\": \"%s\",\n" +
+                                                 "    \"number\": 1,\n" +
+                                                 "    \"car\": {\n" +
+                                                 "        \"id\": \"%s\",\n" +
+                                                 "        \"plate\": \"KGK1020\",\n" +
+                                                 "        \"model\": \"Prisma\",\n" +
+                                                 "        \"color\": \"Preto\"\n" +
+                                                 "    }\n" +
+                                                 "}]\n", lots.get(0).getId(), lots.get(0).getCar().getId())));
         verify(this.lotService, times(1)).findAll(false);
     }
 
@@ -367,12 +348,10 @@ class LotControllerTest extends SpringBootApplicationTest {
         // then
         actions
                 .andExpect(status().isOk())
-                .andExpect(content().json("""
-                        [{
-                            "id": "%s",
-                            "number": 1
-                        }]
-                        """.formatted(lots.get(0).getId())));
+                .andExpect(content().json(format("[{\n" +
+                                                 "    \"id\": \"%s\",\n" +
+                                                 "    \"number\": 1\n" +
+                                                 "}]\n", lots.get(0).getId())));
         verify(this.lotService, times(1)).findAll(true);
     }
 
@@ -394,12 +373,10 @@ class LotControllerTest extends SpringBootApplicationTest {
         // then
         actions
                 .andExpect(status().isBadRequest())
-                .andExpect(content().json("""
-                        {
-                            "logref": "bad-request",
-                            "message": "Param invalid value: available:invalid",
-                            "status": 400
-                        }
-                        """));
+                .andExpect(content().json("{\n" +
+                                          "    \"logref\": \"bad-request\",\n" +
+                                          "    \"message\": \"Param invalid value: available:invalid\",\n" +
+                                          "    \"status\": 400\n" +
+                                          "}\n"));
     }
 }

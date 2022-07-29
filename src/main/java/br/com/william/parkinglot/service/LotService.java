@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static java.lang.String.format;
+
 @Service
 public class LotService {
     private final LotRepository repository;
@@ -29,7 +31,7 @@ public class LotService {
 
         this.repository.findByCarPlate(car.getPlate()).ifPresent(lot -> {
             throw new CarAlreadyParkedException(
-                    "O carro já está estacionado na vaga: %s".formatted(lot.getNumber())
+                    format("O carro já está estacionado na vaga: %s", lot.getNumber())
             );
         });
 

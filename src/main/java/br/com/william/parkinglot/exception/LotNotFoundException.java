@@ -2,10 +2,12 @@ package br.com.william.parkinglot.exception;
 
 import org.springframework.http.HttpStatus;
 
+import static java.lang.String.format;
+
 public class LotNotFoundException extends WebException {
     public LotNotFoundException(final String carPlate) {
         super(
-                "Carro não está estacionado: %s".formatted(carPlate),
+                format("Carro não está estacionado: %s", carPlate),
                 HttpStatus.NOT_FOUND,
                 "lot-not-found"
         );
@@ -13,7 +15,7 @@ public class LotNotFoundException extends WebException {
 
     public LotNotFoundException(final int number) {
         super(
-                "Vaga não existe: %s".formatted(number),
+                format("Vaga não existe: %s", number),
                 HttpStatus.NOT_FOUND,
                 "lot-not-found"
         );

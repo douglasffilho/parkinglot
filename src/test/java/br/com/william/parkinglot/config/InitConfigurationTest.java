@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,7 +30,7 @@ class InitConfigurationTest extends SpringBootApplicationTest {
         this.availableLotsIds = totalAvailableLots
                 .stream()
                 .map(Lot::getId)
-                .toList();
+                .collect(Collectors.toList());
 
         // then:
         assertEquals(5, totalAvailableLots.size());
@@ -42,7 +43,7 @@ class InitConfigurationTest extends SpringBootApplicationTest {
         var lotsIds = totalAvailableLots
                 .stream()
                 .map(Lot::getId)
-                .toList();
+                .collect(Collectors.toList());
 
         // then:
         assertEquals(5, totalAvailableLots.size());

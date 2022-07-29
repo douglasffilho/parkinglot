@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -74,7 +75,7 @@ class CarRepositoryTest extends CarRepositoryBaseTest {
 
         // then
         assertEquals(2, cars.size());
-        assertEquals(List.of("KGK1022", "KGK1023"), cars.stream().map(Car::getPlate).toList());
+        assertEquals(List.of("KGK1022", "KGK1023"), cars.stream().map(Car::getPlate).collect(Collectors.toList()));
     }
 
     @Test
@@ -92,7 +93,7 @@ class CarRepositoryTest extends CarRepositoryBaseTest {
 
         // then
         assertEquals(2, cars.size());
-        assertEquals(List.of("KGK1023", "KGI1025"), cars.stream().map(Car::getPlate).toList());
+        assertEquals(List.of("KGK1023", "KGI1025"), cars.stream().map(Car::getPlate).collect(Collectors.toList()));
     }
 
     @Test
@@ -110,7 +111,7 @@ class CarRepositoryTest extends CarRepositoryBaseTest {
 
         // then
         assertEquals(2, cars.size());
-        assertEquals(List.of("KGK1022", "KGK1023"), cars.stream().map(Car::getPlate).toList());
+        assertEquals(List.of("KGK1022", "KGK1023"), cars.stream().map(Car::getPlate).collect(Collectors.toList()));
     }
 
     @Test
@@ -128,7 +129,7 @@ class CarRepositoryTest extends CarRepositoryBaseTest {
 
         // then
         assertEquals(4, cars.size());
-        assertEquals(List.of("KGK1022", "KGK1023", "KGJ1024", "KGI1025"), cars.stream().map(Car::getPlate).toList());
+        assertEquals(List.of("KGK1022", "KGK1023", "KGJ1024", "KGI1025"), cars.stream().map(Car::getPlate).collect(Collectors.toList()));
     }
 
     @Test

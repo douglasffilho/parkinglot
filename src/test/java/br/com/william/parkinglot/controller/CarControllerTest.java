@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 import static br.com.william.parkinglot.fixture.CarFixture.validCar;
+import static java.lang.String.format;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -34,18 +35,16 @@ class CarControllerTest extends SpringBootApplicationTest {
 
         // then
         this.mockMvc
-                .perform(get("/cars/%s".formatted(carPlate)))
+                .perform(get(format("/cars/%s", carPlate)))
                 .andExpect(status().isOk())
-                .andExpect(content().json("""
-                            {
-                                "id":"%s",
-                                "plate":"KGK1020",
-                                "model":"Prisma",
-                                "color":"Preto"
-                            }
-                        """.formatted(car.getId()), true));
+                .andExpect(content().json(format("    {\n" +
+                                                 "        \"id\":\"%s\",\n" +
+                                                 "        \"plate\":\"KGK1020\",\n" +
+                                                 "        \"model\":\"Prisma\",\n" +
+                                                 "        \"color\":\"Preto\"\n" +
+                                                 "    }\n", car.getId()), true));
 //        var jsonResponse = this.mockMvc
-//                .perform(get("/cars/%s".formatted(carPlate)))
+//                .perform(get(format("/cars/%s", carPlate)))
 //                .andExpect(status().isOk())
 //                .andReturn()
 //                .getResponse()
@@ -63,21 +62,19 @@ class CarControllerTest extends SpringBootApplicationTest {
 
         // when
         when(this.carServiceMock.findByPlate(carPlate))
-                .thenThrow(new CarNotFoundException("car not found by plate: %s".formatted(carPlate)));
+                .thenThrow(new CarNotFoundException(format("car not found by plate: %s", carPlate)));
 
         // then
         this.mockMvc
-                .perform(get("/cars/%s".formatted(carPlate)))
+                .perform(get(format("/cars/%s", carPlate)))
                 .andExpect(status().isNotFound())
-                .andExpect(content().json("""
-                            {
-                                "status":404,
-                                "message":"car not found by plate: %s",
-                                "logref":"car-not-found"
-                            }
-                        """.formatted(carPlate), true));
+                .andExpect(content().json(format("    {\n" +
+                                                 "        \"status\":404,\n" +
+                                                 "        \"message\":\"car not found by plate: %s\",\n" +
+                                                 "        \"logref\":\"car-not-found\"\n" +
+                                                 "    }\n", carPlate), true));
 //        var jsonResponse = this.mockMvc
-//                .perform(get("/cars/%s".formatted(carPlate)))
+//                .perform(get(format("/cars/%s", carPlate)))
 //                .andExpect(status().isOk())
 //                .andReturn()
 //                .getResponse()
@@ -105,7 +102,7 @@ class CarControllerTest extends SpringBootApplicationTest {
                 .thenReturn(page);
 
         // then
-        var url = "/cars?page=%s&size=%s".formatted(
+        var url = format("/cars?page=%s&size=%s",
                 pageRequest.getPageNumber() + 1,
                 pageRequest.getPageSize()
         );
@@ -129,7 +126,7 @@ class CarControllerTest extends SpringBootApplicationTest {
                 .thenReturn(page);
 
         // then
-        var url = "/cars?page=%s&size=%s&filter=%s".formatted(
+        var url = format("/cars?page=%s&size=%s&filter=%s",
                 pageRequest.getPageNumber(),
                 0,
                 filter
@@ -154,7 +151,7 @@ class CarControllerTest extends SpringBootApplicationTest {
                 .thenReturn(page);
 
         // then
-        var url = "/cars?page=%s".formatted(pageRequest.getPageNumber());
+        var url = format("/cars?page=%s", pageRequest.getPageNumber());
         validateRequest(url, cars);
     }
 
@@ -203,49 +200,47 @@ class CarControllerTest extends SpringBootApplicationTest {
         this.mockMvc
                 .perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(content().json("""
-                            {
-                              "content": [
-                                {
-                                  "id": "%s",
-                                  "plate": "KGK1020",
-                                  "model": "Prisma",
-                                  "color": "Preto"
-                                },
-                                {
-                                  "id": "%s",
-                                  "plate": "KGK2030",
-                                  "model": "Prisma",
-                                  "color": "Preto"
-                                }
-                              ],
-                              "pageable": {
-                                "sort": {
-                                  "sorted": false,
-                                  "unsorted": true,
-                                  "empty": true
-                                },
-                                "pageNumber": 0,
-                                "pageSize": 10,
-                                "offset": 0,
-                                "paged": true,
-                                "unpaged": false
-                              },
-                              "totalPages": 1,
-                              "totalElements": 2,
-                              "last": true,
-                              "numberOfElements": 2,
-                              "sort": {
-                                "sorted": false,
-                                "unsorted": true,
-                                "empty": true
-                              },
-                              "first": true,
-                              "number": 0,
-                              "size": 10,
-                              "empty": false
-                            }
-                        """.formatted(cars.get(0).getId(), cars.get(1).getId()), true));
+                .andExpect(content().json(format("    {\n" +
+                                                 "      \"content\": [\n" +
+                                                 "        {\n" +
+                                                 "          \"id\": \"%s\",\n" +
+                                                 "          \"plate\": \"KGK1020\",\n" +
+                                                 "          \"model\": \"Prisma\",\n" +
+                                                 "          \"color\": \"Preto\"\n" +
+                                                 "        },\n" +
+                                                 "        {\n" +
+                                                 "          \"id\": \"%s\",\n" +
+                                                 "          \"plate\": \"KGK2030\",\n" +
+                                                 "          \"model\": \"Prisma\",\n" +
+                                                 "          \"color\": \"Preto\"\n" +
+                                                 "        }\n" +
+                                                 "      ],\n" +
+                                                 "      \"pageable\": {\n" +
+                                                 "        \"sort\": {\n" +
+                                                 "          \"sorted\": false,\n" +
+                                                 "          \"unsorted\": true,\n" +
+                                                 "          \"empty\": true\n" +
+                                                 "        },\n" +
+                                                 "        \"pageNumber\": 0,\n" +
+                                                 "        \"pageSize\": 10,\n" +
+                                                 "        \"offset\": 0,\n" +
+                                                 "        \"paged\": true,\n" +
+                                                 "        \"unpaged\": false\n" +
+                                                 "      },\n" +
+                                                 "      \"totalPages\": 1,\n" +
+                                                 "      \"totalElements\": 2,\n" +
+                                                 "      \"last\": true,\n" +
+                                                 "      \"numberOfElements\": 2,\n" +
+                                                 "      \"sort\": {\n" +
+                                                 "        \"sorted\": false,\n" +
+                                                 "        \"unsorted\": true,\n" +
+                                                 "        \"empty\": true\n" +
+                                                 "      },\n" +
+                                                 "      \"first\": true,\n" +
+                                                 "      \"number\": 0,\n" +
+                                                 "      \"size\": 10,\n" +
+                                                 "      \"empty\": false\n" +
+                                                 "    }\n", cars.get(0).getId(), cars.get(1).getId()), true));
     }
 
     private void validateBadRequest(String url, String errorMessage) throws Exception {
@@ -253,12 +248,10 @@ class CarControllerTest extends SpringBootApplicationTest {
         this.mockMvc
                 .perform(get(url))
                 .andExpect(status().is(statusCode))
-                .andExpect(content().json("""
-                            {
-                              "logref":"bad-request",
-                              "message":"%s",
-                              "status":%s
-                            }
-                        """.formatted(errorMessage, statusCode), true));
+                .andExpect(content().json(format("    {\n" +
+                                                 "      \"logref\":\"bad-request\",\n" +
+                                                 "      \"message\":\"%s\",\n" +
+                                                 "      \"status\":%s\n" +
+                                                 "    }\n", errorMessage, statusCode), true));
     }
 }
