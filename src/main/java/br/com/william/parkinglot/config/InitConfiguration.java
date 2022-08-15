@@ -35,8 +35,8 @@ public class InitConfiguration implements InitializingBean {
         final long contagemDeVagasNoBanco = this.lotsRepository.count();
         if (contagemDeVagasNoBanco != this.LOTS_AVAILABLE) {
             log.info("CRIANDO VAGAS NO BANCO DE DADOS");
-            this.recreateCars();
             this.recreateLots();
+            this.recreateCars();
         }
     }
 
