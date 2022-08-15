@@ -9,7 +9,7 @@ public class CarDTO {
     public String plate;
 
     @NotBlank(message = "missing-model")
-    @Size(max = 10, message = "invalid-model")
+    @Size(max = 30, message = "invalid-model")
     public String model;
 
     @NotBlank(message = "missing-color")
