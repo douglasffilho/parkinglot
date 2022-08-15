@@ -118,7 +118,7 @@ class LotControllerTest extends SpringBootApplicationTest {
         // given
         CarDTO dto = new CarDTO();
         dto.plate = "KGK102";
-        dto.model = "Prisma Nome Muito Grande";
+        dto.model = "Prisma Nome Muito Grande Além do Esperado";
         dto.color = "Preto";
 
         // when

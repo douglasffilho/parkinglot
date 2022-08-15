@@ -14,6 +14,7 @@ public abstract class CarRepositoryBaseTest extends SpringBootApplicationTest {
 
     @BeforeAll
     public void setup() {
+        this.cleanup();
         this.repository.save(new Car(
                 "KGK1022",
                 "Prisma",
