@@ -2,14 +2,12 @@ package br.com.william.parkinglot.service;
 
 import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.entity.Lot;
-import br.com.william.parkinglot.exception.AvailableLotNotFoundException;
-import br.com.william.parkinglot.exception.BadRequestException;
-import br.com.william.parkinglot.exception.CarAlreadyParkedException;
-import br.com.william.parkinglot.exception.LotNotFoundException;
+import br.com.william.parkinglot.exception.*;
 import br.com.william.parkinglot.repository.LotRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -75,5 +73,41 @@ public class LotService {
             return this.repository.findAllByCarNull();
 
         return this.repository.findAllByCarNotNull();
+    }
+
+    public Lot changeFromLotToLotByNumber(final String carPlate, final int currentLotNumber, final int nextLotNumber) {
+        Lot current = this.findByNumber(currentLotNumber);
+
+        Optional
+                .ofNullable(current.getCar())
+                .map(Car::getPlate)
+                .ifPresentOrElse(
+                        (plate) -> {
+                            if (!plate.equals(carPlate))
+                                throw new InvalidCarMoveException(carPlate);
+                        },
+                        () -> {
+                            throw new CarNotFoundException(
+                                    String.format("carro de placa %s não encontrado para vaga %s", carPlate, currentLotNumber)
+                            );
+                        }
+                );
+
+        Lot next = findByNumber(nextLotNumber);
+//        if (next.getCar() != null && next.getCar().getPlate() != null) {
+//            throw new CarConflictException("Já existe um carro estacionado nesta vaga", next.getCar().getPlate());
+//        }
+        Optional
+                .ofNullable(next.getCar())
+                .ifPresent(car -> {
+                    throw new CarAlreadyParkedException(
+                            String.format("Já existe um carro estacionado nesta vaga: %s", car.getPlate())
+                    );
+                });
+        next.setCar(current.getCar());
+        current.setCar(null);
+
+        this.repository.save(current);
+        return this.repository.save(next);
     }
 }

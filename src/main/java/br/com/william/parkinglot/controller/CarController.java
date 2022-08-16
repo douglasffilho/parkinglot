@@ -61,4 +61,7 @@ public class CarController {
         Car creatingCar = CarMapper.map(dto);
         return this.carService.create(creatingCar);
     }
+
+    // endpoint de deleção de carro
+    // endpoint de atualização de carro
 }

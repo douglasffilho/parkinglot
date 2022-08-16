@@ -50,4 +50,13 @@ public class LotController {
     ) {
         return this.service.findAll(filterAvailable);
     }
+
+    @PatchMapping(value = "/move/{carPlate}", params = {"from", "to"})
+    public Lot moveCar(
+            @PathVariable("carPlate") final String carPlate,
+            @RequestParam(name = "from") final Integer currentLotNumber,
+            @RequestParam(name = "to") final Integer nextLotNumber
+    ) {
+        return this.service.changeFromLotToLotByNumber(carPlate, currentLotNumber, nextLotNumber);
+    }
 }

@@ -274,4 +274,13 @@ class LotServiceTest {
         verify(this.repositoryMock, times(1)).findAllByCarNotNull();
         verify(this.repositoryMock, times(0)).findAllByCarNull();
     }
+
+    // [changeFromLotToLotByNumber] - feliz - encontra a vaga pelo numero
+    // [changeFromLotToLotByNumber] - triste - não encontra a vaga pelo numero (LotNotFoundException)
+    // [changeFromLotToLotByNumber] - triste - não tem carro na vaga atual (CarNotFoundException)
+    // [changeFromLotToLotByNumber] - triste - tem carro na vaga atual, mas, placas diferentes (InvalidCarMoveException)
+    // [changeFromLotToLotByNumber] - triste - não encontra a proxima vaga por numero (LotNotFoundException)
+    // [changeFromLotToLotByNumber] - triste - já existe um carro na vaga de destino (CarAlreadyParkedException)
+    // [changeFromLotToLotByNumber] - feliz - remove carro da vaga atual e coloca na proxima vaga
+
 }
