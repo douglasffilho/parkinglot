@@ -5,6 +5,7 @@ import br.com.william.parkinglot.entity.Lot;
 import br.com.william.parkinglot.exception.*;
 import br.com.william.parkinglot.repository.LotRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +77,9 @@ public class LotService {
     }
 
     public Lot changeFromLotToLotByNumber(final String carPlate, final int currentLotNumber, final int nextLotNumber) {
+        if (!StringUtils.hasText(carPlate))
+            throw new BadRequestException("Informe uma placa válida", "invalid-car-plate");
+
         Lot current = this.findByNumber(currentLotNumber);
 
         Optional
