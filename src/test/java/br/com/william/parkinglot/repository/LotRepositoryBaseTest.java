@@ -6,6 +6,7 @@ import br.com.william.parkinglot.entity.Lot;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.stream.IntStream;
 
@@ -44,9 +45,11 @@ public abstract class LotRepositoryBaseTest extends SpringBootApplicationTest {
     }
 
     protected void rentLotForCar(final String carPlate) {
-        this.repository
-                .findFirstByCarNull()
-                .ifPresent(lot -> this.rentLotForCarByPlate(lot, carPlate));
+        var availableLots = this.repository.findByCarNull(PageRequest.ofSize(100));
+        if (!availableLots.isEmpty()) {
+            var lot = availableLots.get(0);
+            this.rentLotForCarByPlate(lot, carPlate);
+        }
     }
 
     private void rentLotForCarByPlate(final Lot lot, final String carPlate) {

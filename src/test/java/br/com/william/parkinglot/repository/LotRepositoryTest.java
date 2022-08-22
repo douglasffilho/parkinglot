@@ -3,27 +3,25 @@ package br.com.william.parkinglot.repository;
 import br.com.william.parkinglot.entity.Lot;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class LotRepositoryTest extends LotRepositoryBaseTest {
     @Test
     public void shouldFindAnAvailableLot() {
         // when:
-        Optional<Lot> lotWrapper = this.repository.findFirstByCarNull();
+        List<Lot> availableLots = this.repository.findByCarNull(PageRequest.ofSize(10));
 
         // then:
-        assertNotNull(lotWrapper);
-        assertTrue(lotWrapper.isPresent());
-        Lot lot = lotWrapper.get();
+        assertNotNull(availableLots);
+        assertFalse(availableLots.isEmpty());
+        Lot lot = availableLots.get(0);
         assertNull(lot.getCar());
         assertEquals(1, lot.getNumber());
     }
@@ -34,11 +32,11 @@ class LotRepositoryTest extends LotRepositoryBaseTest {
         this.fulfillAllLots();
 
         // when:
-        Optional<Lot> lotWrapper = this.repository.findFirstByCarNull();
+        var availableLots = this.repository.findByCarNull(PageRequest.ofSize(5));
 
         // then:
-        assertNotNull(lotWrapper);
-        assertTrue(lotWrapper.isEmpty());
+        assertNotNull(availableLots);
+        assertTrue(availableLots.isEmpty());
     }
 
     @Test

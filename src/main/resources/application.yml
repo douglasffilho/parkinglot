@@ -7,6 +7,7 @@ spring:
     hibernate:
       ddl-auto: update
     defer-datasource-initialization: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   sql:
     init:
       mode: never

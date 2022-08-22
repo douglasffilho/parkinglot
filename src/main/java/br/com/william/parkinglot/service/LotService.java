@@ -4,11 +4,13 @@ import br.com.william.parkinglot.entity.Car;
 import br.com.william.parkinglot.entity.Lot;
 import br.com.william.parkinglot.exception.*;
 import br.com.william.parkinglot.repository.LotRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import static java.lang.String.format;
 
@@ -34,9 +36,13 @@ public class LotService {
             );
         });
 
-        Lot lot = this.repository
-                .findFirstByCarNull()
-                .orElseThrow(AvailableLotNotFoundException::new);
+        List<Lot> availableLots = this.repository.findByCarNull(PageRequest.ofSize(5));
+        if (availableLots.isEmpty())
+            throw new AvailableLotNotFoundException();
+
+        int index = new Random().nextInt(availableLots.size());
+
+        Lot lot = availableLots.get(index);
 
         Car registeredCar = this.carService.findOrCreate(car);
 

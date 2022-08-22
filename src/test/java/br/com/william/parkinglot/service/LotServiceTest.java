@@ -8,8 +8,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static br.com.william.parkinglot.fixture.CarFixture.validCar;
@@ -46,7 +49,7 @@ class LotServiceTest {
 
         // when:
         when(this.repositoryMock.findByCarPlate(carPlate)).thenReturn(Optional.empty());
-        when(this.repositoryMock.findFirstByCarNull()).thenReturn(Optional.of(validAvailableLot(1)));
+        when(this.repositoryMock.findByCarNull(any(Pageable.class))).thenReturn(List.of(validAvailableLot(1)));
         when(this.carServiceMock.findOrCreate(car)).thenReturn(car);
         when(this.repositoryMock.save(any(Lot.class))).thenAnswer((lot) -> lot.getArgument(0));
         Lot occupiedLot = this.service.rentAvailableLot(car);
@@ -66,7 +69,7 @@ class LotServiceTest {
 
         // when:
         when(this.repositoryMock.findByCarPlate(carPlate)).thenReturn(Optional.empty());
-        when(this.repositoryMock.findFirstByCarNull()).thenReturn(Optional.empty());
+        when(this.repositoryMock.findByCarNull(any(Pageable.class))).thenReturn(new ArrayList<>());
         Executable exec = () -> this.service.rentAvailableLot(car);
 
         // then:
