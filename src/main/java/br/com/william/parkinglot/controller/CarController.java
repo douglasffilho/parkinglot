@@ -62,6 +62,9 @@ public class CarController {
         return this.carService.create(creatingCar);
     }
 
-    // endpoint de deleção de carro
-    // endpoint de atualização de carro
+    @DeleteMapping("/{carPlate}")
+    @ResponseStatus(HttpStatus.OK)
+    public Car delete(@PathVariable("carPlate") String carPlate) {
+        return this.carService.deleteByPlate(carPlate);
+    }
 }

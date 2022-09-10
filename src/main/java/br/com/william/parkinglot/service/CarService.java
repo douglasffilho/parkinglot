@@ -54,4 +54,11 @@ public class CarService {
             );
         }
     }
+
+    public Car deleteByPlate(String plate) {
+        Car found = this.findByPlate(plate);
+        this.carRepository.delete(found);
+
+        return found;
+    }
 }
