@@ -15,6 +15,7 @@ import java.util.List;
 import static br.com.william.parkinglot.fixture.CarFixture.validCar;
 import static java.lang.String.format;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -194,6 +195,27 @@ class CarControllerTest extends SpringBootApplicationTest {
 
         // then
         validateBadRequest(url, "Param invalid value: size:a");
+    }
+
+    @Test
+    public void shouldDeleteCarByPlateWithStatusOK() throws Exception {
+        // given
+        var carPlate = "KGK1020";
+        Car car = validCar(carPlate);
+
+        // when
+        when(this.carServiceMock.deleteByPlate(carPlate)).thenReturn(car);
+
+        // then
+        this.mockMvc
+                .perform(delete(format("/cars/%s", carPlate)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(format("    {\n" +
+                                                 "        \"id\":\"%s\",\n" +
+                                                 "        \"plate\":\"KGK1020\",\n" +
+                                                 "        \"model\":\"Prisma\",\n" +
+                                                 "        \"color\":\"Preto\"\n" +
+                                                 "    }\n", car.getId()), true));
     }
 
     private void validateRequest(String url, List<Car> cars) throws Exception {

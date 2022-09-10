@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -172,5 +173,41 @@ class CarServiceTest {
         assertNotNull(page);
         assertEquals(2, page.getTotalElements());
         assertEquals(List.of("KGK1030", "KGK3020"), page.getContent().stream().map(Car::getPlate).collect(toList()));
+    }
+
+    // [delete] - caminho feliz: acha o carro por placa e deleta
+    @Test
+    public void shouldDeleteCarByPlate() {
+        // given:
+        var plate = "KGK1031";
+        var deletionCar = validCar(plate);
+
+        // when:
+        when(this.carRepositoryMock.findByPlate(plate)).thenReturn(Optional.of(deletionCar));
+        Car car = this.carService.deleteByPlate(plate);
+
+        // then:
+        verify(this.carRepositoryMock, times(1)).delete(deletionCar);
+        assertNotNull(car);
+        assertEquals(plate, car.getPlate());
+    }
+
+    // [delete] - caminho infeliz: não acha o carro pela placa e lança erro de CarNotFoundException
+    @Test
+    public void shouldNotDeleteCarByPlateNotFound() {
+        // given:
+        var plate = "unknown";
+
+        // when:
+        when(this.carRepositoryMock.findByPlate(plate)).thenReturn(Optional.empty());
+        Executable exec = () -> this.carService.deleteByPlate(plate);
+
+        // then:
+        CarNotFoundException error = assertThrows(CarNotFoundException.class, exec);
+        assertEquals("car not found by plate: unknown", error.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, error.getStatus());
+        assertEquals("car-not-found", error.getLogref());
+
+        verify(this.carRepositoryMock, times(0)).delete(any(Car.class));
     }
 }
